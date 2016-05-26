@@ -1,0 +1,27 @@
+version: '2'
+services:
+  drupal:
+    user: "1000000"
+    hostname: drupal
+    build: .
+    image: ubuntu-16-apache-2.4-php-5.6-drupal7
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+# Using official mysql for testing, this will need changing to our mysql/mariadb when ready.
+  mysql:
+    hostname: mysql
+    image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mariadb-10.0:unstable
+    user: "1000000"
+    environment:
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: EnvVarHere
+      MYSQL_DATABASE: drupal
+      MYSQL_ROOT_PASSWORD: bob
+      SUPERVISORD_EXIT_ON_FATAL: "0"    
+    ports:
+      - "8081:8080"
