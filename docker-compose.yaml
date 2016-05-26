@@ -15,7 +15,7 @@ services:
 # Using official mysql for testing, this will need changing to our mysql/mariadb when ready.
   mysql:
     hostname: mysql
-    image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mariadb-10.0:unstable
+    image: mysql:latest
     user: "1000000"
     environment:
       MYSQL_USER: drupal
