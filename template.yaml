@@ -1,79 +1,14 @@
 apiVersion: v1
 kind: Template
 labels:
-    template: apache-php5.6-mysql-drupal template
+    template: apache-php5.6-mysql-drupal-template
 metadata:
-  name: drupal-php5.6-apache-ephemeral
+  name: drupal7-php5.6-apache-ephemeral
   annotations:
     description: "Drupal 7 on Apache 2.4 and PHP 5.6"
     iconClass: "icon-php"
-    tags: "drupal"
+    tags: "quickstart,php,drupal"
 objects:
-- apiVersion: v1
-  kind: Service
-  metadata:
-    annotations:
-      description: Apache 2.4
-    name: ${APP_SERVICE_NAME}
-  spec:
-    ports:
-    - name: web
-      port: 8080
-      targetPort: 8080
-    selector:
-      name: ${APP_SERVICE_NAME}
-- apiVersion: v1
-  kind: Route
-  metadata:
-    name: ${APP_SERVICE_NAME}
-  spec:
-    host: ${APPLICATION_DOMAIN}
-    to:
-      kind: Service
-      name: ${APP_SERVICE_NAME}
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    annotations:
-      description: Definition for deploying Apache
-    labels:
-      service: apache-2.4
-    name: ${APP_SERVICE_NAME}
-  spec:
-    replicas: 1
-    selector:
-      name: ${APP_SERVICE_NAME}
-    strategy:
-      type: Rolling
-    template:
-      metadata:
-        labels:
-          name: ${APP_SERVICE_NAME}
-          service: apache-2.4
-        name: ${APP_SERVICE_NAME}
-      spec:
-        containers:
-        - env:
-          image: 1and1internet/ubuntu-16-apache-2.4-php-5.6-drupal-7:unstable
-          imagePullPolicy: Always
-          livenessProbe:
-            initialDelaySeconds: 30
-            tcpSocket:
-                port: 8080
-            timeoutSeconds: 1
-          name: ${APP_SERVICE_NAME}
-          volumeMounts:
-          - mountPath: /var/www
-            name: apache-data
-        restartPolicy: Always
-        securityContext:
-          runAsUser: 1000550030
-        volumes:
-        - emptyDir:
-            medium: ""
-          name: apache-data
-    triggers:
-    - type: ConfigChange
 - apiVersion: v1
   kind: Service
   metadata:
@@ -132,17 +67,92 @@ objects:
       spec:
         containers:
         - env:
-          - name: MYSQL_USER
-            value: ${MYSQL_USER}
-          - name: MYSQL_PASSWORD
-            value: ${MYSQL_PASSWORD}
+          - name: DRUPAL_DB_USER
+            value: ${DRUPAL_DB_USER}
+          - name: DRUPAL_DB_PASSWORD
+            value: ${DRUPAL_DB_PASSWORD}
           - name: MYSQL_ROOT_PASSWORD
             value: ${MYSQL_ROOT_PASSWORD}
+          - name: DRUPAL_DB_NAME
+            value: ${DRUPAL_DB_NAME}
           image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mysql-5.7:unstable
           imagePullPolicy: Always
           name: ${APP_SERVICE_NAME}
         securityContext:
-          runAsUser: 1000550040
+          runAsUser: 1000580040
+    triggers:
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Apache 2.4
+    name: ${APP_SERVICE_NAME}
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: ${APP_SERVICE_NAME}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${APP_SERVICE_NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    to:
+      kind: Service
+      name: ${APP_SERVICE_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Definition for deploying Apache
+    labels:
+      service: apache-2.4
+    name: ${APP_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${APP_SERVICE_NAME}
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: ${APP_SERVICE_NAME}
+          service: apache-2.4
+        name: ${APP_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: DRUPAL_DB_USER
+            value: ${DRUPAL_DB_USER}
+          - name: DRUPAL_DB_PASSWORD
+            value: ${DRUPAL_DB_PASSWORD}
+          - name: DRUPAL_DB_NAME
+            value: ${DRUPAL_DB_NAME}
+          - name: DRUPAL_DB_PREFIX
+            value: ${DRUPAL_DB_PREFIX}
+          image: 1and1internet/ubuntu-16-apache-2.4-php-5.6-drupal-7:unstable
+          imagePullPolicy: Always
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+                port: 8080
+            timeoutSeconds: 1
+          name: ${APP_SERVICE_NAME}
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: apache-data
+        restartPolicy: Always
+        securityContext:
+          runAsUser: 1000580030
+        volumes:
+        - emptyDir:
+            medium: ""
+          name: apache-data
     triggers:
     - type: ConfigChange
 parameters:
@@ -155,7 +165,7 @@ parameters:
   displayName: Application service name
   name: APP_SERVICE_NAME
   required: true
-  from: apache-[a-z]{5}
+  from: drupal-[a-z]{5}
   generate: expression
 - description: The exposed hostname that will route to the Apache Server, if left
     blank a value will be defaulted.
@@ -172,30 +182,36 @@ parameters:
   generate: expression
   name: DATABASE_APP_SERVICE_NAME
   required: true
-- description: MySQL Username
-  displayName: Username for MySQL
-  from: user[A-Z0-9]{3}
-  generate: expression
-  name: MYSQL_USER
-  required: true
-- description: MySQL Password
-  displayName: Password for MySQL
-  from: '[a-zA-Z0-9]{6}'
-  generate: expression
-  name: MYSQL_PASSWORD
-  required: true
-- description: MySQL Root Password
-  displayName: Password for MySQL Root User
-  from: '[a-zA-Z0-9!@#$%]{8}'
-  generate: expression
-  name: MYSQL_ROOT_PASSWORD
-  required: true
-- description: Service Name for MySQL
-  displayName: Service Name for MySQL
+- description: The name of the Service exposed for the database.
+  displayName: Database Service Name
   name: DATABASE_SERVICE_NAME
   required: true
   value: mysql
-- description: Maximum amount of memory the database container can use.
-  displayName: Memory Limit
-  name: MEMORY_LIMIT
-  value: 512Mi
+- description: Username for MySQL database that will be used for Drupal.
+  displayName: Drupal Database Username
+  from: user[A-Z0-9]{4}
+  generate: expression
+  name: DRUPAL_DB_USER
+  required: true
+- description: Password for the MySQL database that will be used for Drupal.
+  displayName: Drupal Database Password
+  from: '[a-zA-Z0-9]{8}'
+  generate: expression
+  name: DRUPAL_DB_PASSWORD
+  required: true
+- description: MySQL Root Password
+  displayName: Password for MySQL Root User
+  from: '[a-zA-Z0-9]{8}'
+  generate: expression
+  name: MYSQL_ROOT_PASSWORD
+  required: true
+- description: Name of the MySQL database accessed.
+  displayName: MySQL Database Name
+  name: DRUPAL_DB_NAME
+  required: true
+  value: drupaldb
+- description: Prefix used on the Drupal tables in the database
+  displayName: Drupal Prefix
+  name: DRUPAL_DB_PREFIX
+  required: true
+  value: drp_
