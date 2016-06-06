@@ -5,6 +5,10 @@ services:
     hostname: drupal
     build: .
     image: ubuntu-16-apache-2.4-php-5.6-drupal7
+    environment:
+      DRUPAL_DB_USER: fhtest
+      DRUPAL_DB_PASSWORD: Fhtest123!
+      DRUPAL_DB_NAME: fhtest
     ports:
       - "8080:8080"
     depends_on:
@@ -15,12 +19,12 @@ services:
 # Using official mysql for testing, this will need changing to our mysql/mariadb when ready.
   mysql:
     hostname: mysql
-    image: mysql:latest
+    image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mysql-5.7:latest
     user: "1000000"
     environment:
-      MYSQL_USER: drupal
-      MYSQL_PASSWORD: EnvVarHere
-      MYSQL_DATABASE: drupal
+      MYSQL_USER: fhtest
+      MYSQL_PASSWORD: Fhtest123!
+      MYSQL_DATABASE: fhtest
       MYSQL_ROOT_PASSWORD: bob
       SUPERVISORD_EXIT_ON_FATAL: "0"    
     ports:
