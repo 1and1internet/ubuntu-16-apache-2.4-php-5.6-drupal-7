@@ -13,6 +13,6 @@ ENV DRUPAL_DB_HOST=mysql \
 RUN \
     apt-get update && apt-get install -y libpng12-dev libjpeg-dev libpq-dev drush && \
     rm -rf /var/lib/apt/lists/* && \
-    DRUPAL_VERSION=$(curl -fsl https://ftp.drupal.org/files/projects/ | grep 'drupal-7.[0-9][0-9].tar.gz' | awk '{ print $2 }' | cut -d '"' -f 2 | sort -nr | head -1) && \
+    DRUPAL_VERSION=$(curl -fsl https://ftp.drupal.org/files/projects/ | grep -Eo 'drupal-7.[0-9][0-9].tar.gz' | sort -nr | head -1) && \
     curl -fSL "https://ftp.drupal.org/files/projects/${DRUPAL_VERSION}" -o /usr/src/drupal.tar.gz && \
     chmod -R 755 /hooks /init
