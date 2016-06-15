@@ -42,9 +42,9 @@ RSpec.configure do |c|
   set :docker_image, @image.id
   set :docker_container_create_options, { 
       'User' => '100000',
-      'Host Config'    => {
-         'NetworkMode' => @network.info["Name"], 
-      },
+      #'Host Config'    => {
+      #   'NetworkMode' => @network.info["Name"],
+      #},
       'Env'            => [
         "DRUPAL_DB_USER=#{MYSQL_USER}",
         "DRUPAL_DB_PASSWORD=#{MYSQL_PASSWORD}",
