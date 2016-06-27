@@ -29,3 +29,4 @@ else
     cp /usr/src/standard.profile /var/www/html/profiles/standard/standard.profile
     echo "Copied DB config over."
 fi
+
