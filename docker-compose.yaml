@@ -4,7 +4,7 @@ services:
     user: "1000000"
     hostname: drupal
     build: .
-    image: ubuntu-16-apache-2.4-php-5.6-drupal7
+    image: ubuntu-16-apache-php-5.6-drupal-7
     environment:
       DRUPAL_DB_USER: fhtest
       DRUPAL_DB_PASSWORD: Fhtest123!
@@ -19,7 +19,7 @@ services:
 # Using official mysql for testing, this will need changing to our mysql/mariadb when ready.
   mysql:
     hostname: mysql
-    image: 1and1internet/ubuntu-16-nginx-1.10.0-php-7.0-phpmyadmin-4.6-mysql-5.7:latest
+    image: 1and1internet/ubuntu-16-nginx-php-phpmyadmin-mysql-5:latest
     user: "1000000"
     environment:
       MYSQL_USER: fhtest
