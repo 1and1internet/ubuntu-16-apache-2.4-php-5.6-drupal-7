@@ -10,7 +10,7 @@ ENV DRUPAL_DB_HOST=mysql \
     DRUPAL_DB_DRIVER=mysql \
     DRUPAL_DB_PREFIX=''
 RUN \
-    apt-get update && apt-get install -y libpng12-dev libjpeg-dev libpq-dev drush && \
+    apt-get update && apt-get install -y php-uploadprogress libpng12-dev libjpeg-dev libpq-dev drush && \
     rm -rf /var/lib/apt/lists/* && \
     DRUPAL_VERSION=$(curl -fs https://www.drupal.org/node/3060/release/feed | grep -Eo 'drupal-7.[0-9][0-9].tar.gz' | sort -nr | head -1) && \
     echo "Pulling $DRUPAL_VERSION" && \
