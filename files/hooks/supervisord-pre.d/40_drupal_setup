@@ -17,7 +17,7 @@ else
 	tar -xz --strip-components=1 -f /usr/src/drupal.tar.gz -C /var/www/html/
 fi
 
-Checking if DB ENV set, if they do rename fh_settings.php to settings.php.
+#Checking if DB ENV set, if they do rename fh_settings.php to settings.php.
 
 declare -a DB_DETAILS=($DRUPAL_DB_HOST $DRUPAL_DB_USER $DRUPAL_DB_NAME $DRUPAL_DB_PASSWORD);
 DB_CHECK="echo ${DB_DETAILS[@]}"
