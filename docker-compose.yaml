@@ -10,7 +10,8 @@ services:
       DRUPAL_DB_PASSWORD: Fhtest123!
       DRUPAL_DB_NAME: fhtest
     ports:
-      - "8080:8080"
+      - "80:8080"
+      - "443:8443"
     depends_on:
       - mysql
     links:
