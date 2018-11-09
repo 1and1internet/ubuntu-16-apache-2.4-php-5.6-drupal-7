@@ -12,7 +12,7 @@ ENV DRUPAL_DB_HOST=mysql \
 RUN \
     apt-get update && apt-get install -y php-uploadprogress libpng12-dev libjpeg-dev libpq-dev && \
     rm -rf /var/lib/apt/lists/* && \
-    DRUPAL_VERSION=$(curl -fs https://www.drupal.org/project/drupal/releases | grep -Eo 'drupal-7.[0-9][0-9].tar.gz' | sort -nr | head -1) && \
+    DRUPAL_VERSION=$(curl -fs https://ftp.drupal.org/files/projects/ | grep  -Eo 'drupal-7.[0-9][0-9].tar.gz' | sort -nr | head -1) && \
     echo "Pulling $DRUPAL_VERSION" && \
     curl -fSL "https://ftp.drupal.org/files/projects/${DRUPAL_VERSION}" -o /usr/src/drupal.tar.gz && \
     chmod -R 755 /hooks /init
